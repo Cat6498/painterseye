@@ -97,3 +97,11 @@
 ### 2 Nov 21
 
 * *5 hours* Continued neural renderer experiments, successfully trained for 30 epochs c:
+
+### 3 Nov 21
+
+* *30 mins* Sixth meeting with Nicolas
+
+<br />
+
+## Week 7
