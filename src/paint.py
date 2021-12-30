@@ -11,9 +11,13 @@ def get_weights(map, pt, strokes_per_layer, method="equal", map_type="final", s=
   weights = []
   total_map = np.sum(map)
   total_map_nonzero = cv2.countNonZero(map)
+  if total_map < 0.1:
+    weight = round(strokes_per_layer/pt.m_grid**2)
+    for i in range(pt.m_grid**2):
+      weights.append(weight)
 
   # Equal weight distribution
-  if method == "equal":
+  elif method == "equal":
     foreground = []
     background = []
     patch_id = 0

@@ -145,15 +145,15 @@ class PainterBase():
             if save_video:
                 video_writer.write((this_frame[:,:,::-1] * 255.).astype(np.uint8))
 
-        if save_jpgs:
-            print('saving input photo...')
-            out_img = cv2.resize(self.img_, (out_w, out_h), cv2.INTER_AREA)
-            plt.imsave(file_name + '_input.png', out_img)
+        
+        print('saving input photo...')
+        out_img = cv2.resize(self.img_, (out_w, out_h), cv2.INTER_AREA)
+        plt.imsave(file_name + '_input.png', out_img)
 
         final_rendered_image = np.copy(this_frame)
-        if save_jpgs:
-            print('saving final rendered result...')
-            plt.imsave(file_name + '_final.png', final_rendered_image)
+        
+        print('saving final rendered result...')
+        plt.imsave(file_name + '_final.png', final_rendered_image)
 
         return final_rendered_image
 

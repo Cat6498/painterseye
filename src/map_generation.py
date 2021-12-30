@@ -56,7 +56,7 @@ def semantic_seg(inp_img):
 def sal_map_generator(inp_img):
   print("Generating saliency map...")
   salGAN = SalGan()
-  salGAN.load_state_dict(torch.load('GAN_model/gan_torch_model.pkl'))
+  salGAN.load_state_dict(torch.load('checkpoints/GAN_model/gan_torch_model.pkl'))
   
   image = cv2.imread(inp_img, cv2.IMREAD_COLOR)
 
@@ -89,7 +89,7 @@ def get_maps(inp_img):
     obj_mean = np.mean(saliency_obj[img_object!=0]/np.max(saliency_obj))
     print(obj_mean)
 
-    if (obj_mean > 0.2):
+    if (obj_mean > 0.1):
       final_objs += img_object
       saliency_obj[img_object==0] = 0
       final_blend += saliency_obj
