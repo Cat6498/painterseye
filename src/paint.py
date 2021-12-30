@@ -55,8 +55,15 @@ def get_weights(map, pt, strokes_per_layer, method="equal", map_type="final", s=
     back *= strokes_per_layer
     fore *= strokes_per_layer
 
-    foreground_strokes = round(fore/len(foreground))
-    background_strokes = round(back/len(background))
+    if  (len(foreground) != 0):
+      foreground_strokes = round(fore/len(foreground))
+    else:
+      foreground_strokes = 0
+      
+    if (len(background) != 0):
+      background_strokes = round(back/len(background))
+    else:
+      background_strokes = 0
 
     for patch_id in range(pt.m_grid**2):
       if patch_id in foreground:
