@@ -54,4 +54,9 @@ Coming soon...
 Link to the dissertation material folder on google drive (includes meeting minutes, project briefs, and research material):
 [Dissertation Material](https://drive.google.com/drive/folders/1G2O_FanmPbNt1FlOE2I4gvPyI7F_sztO?usp=sharing)
 
+## Demo
+
+The painting program is available to run on Colab. It includes checkpoints download and customisation of parameters.
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1Knl2XOdvjRWYU1qFSDlSq8Zwh-ifL1fA?usp=sharing)
 
