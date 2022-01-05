@@ -9,6 +9,8 @@ The aim of this research project is to teach an artificial intelligence to paint
 
 The final painter is composed by three main neural networks (one for segmentation, one for saliency and one for painting) and some helper functions to process the image. The following diagram illustrates the high-level structure of the software from input to output.
 
+![Diagram of the painting process (software architecture)](doc_pics/structure.png)
+
 ### 1. Resizing the image
 
 To prevent Colab's GPUs from running out of memory while painting, the image is first passed through a function that resizes it. This function maintains the height-width ratio of the original image, and scales it down so that the smallest side is 512.
@@ -17,7 +19,10 @@ To prevent Colab's GPUs from running out of memory while painting, the image is 
 
 Detectron2 is a powerful AI library by Meta Research that provides algorithms for object detection and segmentation in pictures and videos. Developed in PyTorch, the implementation can be found in their [GitHub page](https://github.com/facebookresearch/detectron2). 
 
-The `semantic_seg()` function in `map_generation.py` relies on Detectron2 to perform panoptic segmentation of the input image. Panoptic segmentation blends instance detection with semantic segmentation: it tries to divide the pixels in the image based on the class to which they belong (semantic segmentation), while also identifying instances of the classes (instance detection). First, the function downloads the configuration file from the Detectron's model zoo, and it uses it to download the network checkpoint and to instantiate the predictor. Then, it loads the input image and processes it with the predictor, obtaining the `panoptic_matrix` and the `segments_info`. The latter is a list with info on all the objects identified, while the former is a matrix of size height\*width of the input image, and it stores the id of each object in the positiong where the object is in the image (see picture). 
+The `semantic_seg()` function in `map_generation.py` relies on Detectron2 to perform panoptic segmentation of the input image. Panoptic segmentation blends instance detection with semantic segmentation: it tries to divide the pixels in the image based on the class to which they belong (semantic segmentation), while also identifying instances of the classes (instance detection). First, the function downloads the configuration file from the Detectron's model zoo, and it uses it to download the network checkpoint and to instantiate the predictor. Then, it loads the input image and processes it with the predictor, obtaining the `panoptic_matrix` and the `segments_info`. The latter is a list with info on all the objects identified, while the former is a matrix of size height\*width of the input image, and it stores the id of each object in the positiong where the object is in the image (as illustrated in the picture below). 
+
+![Diagram of the segmentation process](doc_pics/segmentation.png)
+
 The function creates a panoptic image by stacking three panoptic matrices along a new dimension (to act like the color channels). Then, for each object in the `segments_info` list, it creates a binary mask of the object, creating a copy of the panoptic image filled with zeros, and setting it to one where the panoptic image matches the object id. Finally, it stores the segments in the `segments` folder.
 
 ### 3. SalGAN
