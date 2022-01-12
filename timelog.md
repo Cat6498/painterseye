@@ -214,7 +214,19 @@
 
 * *6 hours* Finished refactoring, some bug fixing in the map generation and weight distribution, added function to automatically download and unzip the checkpoints for the models (directly from the original models), did a bit of restructuring of the project folder and worked on git documentation
 
+### 5 Jan 2022
+
+* *3 hours* Started writing documentation for the readme and processing images for evaluation
+
 <br />
+
+
+
+## Week 13
+
+### 12 Jan 2022
+
+* *3 hours* Finished documentation for the readme and continued processing images for evaluation
 
 
 
