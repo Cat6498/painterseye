@@ -37,7 +37,57 @@ The map generation function creates two different maps to drive the painting pro
 
 ### 5. Painter
 
-*Coming soon...*
+For the painter, we choose as baseline the Stylized Neural Renderer proposed by Zou et al. (the code is available on their GitHub page). 
+
+The painter has three main components:
+* a network, the renderer, trained to generate and render brushstrokes from stroke vectors,
+* a blender that blends brushstrokes so they remain differentiable
+* and a final component to measure the loss and enforce similarity with the original picture.
+
+The approach proposed by Zou et al. is innovative in the structure of the renderer. It is divided in two networks:
+
+* a rasterisation network, made of a positional encoder and a pixel decoder
+* and a shading network, made of transposed convolutional layers.
+
+Each stroke x is represented as a vector. The parameters of each vectors are divided into color, shape and transparency. Both color and shape are fed to the shading network, that predicts the stroke's foreground color. The shape is also used by the rasterisation network, which produces a clear shilouette of the stroke. Finally, the foreground color is masked with the shilouette, and the shilouette is multiplied by the transparency parameter to get the alpha matte. 
+
+Once the foreground and alpha matte of a stroke have been predicted, they need to be added to the canvas. The approach uses a soft blending technique, where the canvas h at stroke k is equal to the alpha matte of k multiplied by its foreground, plus the canvas at stroke k-1 times 1-alpha. In this way, the strokes are completely differentiable. The strokes up to k are grouped into an active set, and they are optimised to minimise the difference with the original picture. 
+
+#### Stroke distribution
+
+In the baseline painting program - progressive painter version - the image is gradually divided into smaller patches. For instance, if the `max_divide` parameter is 3, the image will be sequentially divided into 1, 4 and 9 patches. Each patch will get the same number of brushstrokes, equal to the maximum amount of strokes divided by the number of patches. 
+
+Here is where we try a different approach compared to the baseline. Instead of giving the same number of strokes to each patch, we distribute weights according to the object and the blend map. We distribute weights in two different ways, "equal" and "individual". The weights are distributed at each layer (so with `max_divide = 3` weights are distributed once with one patch, once with 4 and once with 9), using as total strokes for the layer the number of strokes attributed to each patch by the baseline times the number of patches.
+
+##### Equal weight distribution
+
+The equal weight distribution method uses the maps to decide which patches belong to what should be the foreground or the background of the painting. It calculates the weight of each patch in the layer depending on the map that is being used:
+* with the object map (binary), it just counts how many pixels are non-zero,
+* with the blend map, it takes ratio of the sum of the patch and the sum of the whole map.
+
+It then uses two different thresholds (50 percent of the pixels for the object map, and the inverse of the number of patches for the blend map) to decide which patches will belong to the background and which to the foreground. 
+
+By default, the background patches will receive 30% of the total strokes for the layer, while the foreground ones will receive the remaining 70%. If there is no background or foreground, the other receives 100% of the strokes. The 30% of the total strokes are then divided equally among the background patches (same for the foreground).
+
+##### Singular weight distribution
+
+In a similar way to the equal weight distribution, the singular mode first attributes a weight to each patch in the layer acccording to the used map:
+
+* for the object map, it takes the ratio between the number of non-zero values in the patch and in the whole map,
+* for the blend map, it takes ratio of the sum of the patch and the sum of the whole map.
+
+If any patch has a weight less than 0.05, the weight for that patch is set to 0.05 to prevent the painter from leaving empty spaces on the canvas. Then, to get the number of strokes for each patch, it simply multiplies the total number of strokes for the layer by the weight of the patch.
+
+<br \>
+
+This gives rise to 4 variations from the baseline:
+
+* Singular weight distribution + object map
+* Singular weight distribution + blend map
+* Equal weight distribution + object map
+* Equal weight distribution + blend map
+
+Note: in case none of the objects is considered as relevant (so the final maps are empty), the weight distribution reverses back to the baseline mode, assigning the same number of brushstrokes to each patch.
 
 ## References
 
