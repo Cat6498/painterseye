@@ -37,7 +37,7 @@ The map generation function creates two different maps to drive the painting pro
 
 ### 5. Painter
 
-For the painter, we choose as baseline the Stylized Neural Renderer proposed by Zou et al. (the code is available on their GitHub page). 
+For the painter, we choose as baseline the Stylized Neural Renderer proposed by [Zou et al](https://arxiv.org/abs/2011.08114). (the code is available on their [GitHub](https://github.com/jiupinjia/stylized-neural-painting) page). 
 
 The painter has three main components:
 * a network, the renderer, trained to generate and render brushstrokes from stroke vectors,
@@ -78,7 +78,7 @@ In a similar way to the equal weight distribution, the singular mode first attri
 
 If any patch has a weight less than 0.05, the weight for that patch is set to 0.05 to prevent the painter from leaving empty spaces on the canvas. Then, to get the number of strokes for each patch, it simply multiplies the total number of strokes for the layer by the weight of the patch.
 
-<br \>
+<br />
 
 This gives rise to 4 variations from the baseline:
 
@@ -86,6 +86,10 @@ This gives rise to 4 variations from the baseline:
 * Singular weight distribution + blend map
 * Equal weight distribution + object map
 * Equal weight distribution + blend map
+
+Here is an example of the different results from the same input image:
+
+![Example of results](doc_pics/different-weight-maps.png)
 
 Note: in case none of the objects is considered as relevant (so the final maps are empty), the weight distribution reverses back to the baseline mode, assigning the same number of brushstrokes to each patch.
 
@@ -103,7 +107,6 @@ Zou, Z., Shi, T., Qiu, S., Yuan, Y., Michigan, Z.S.U. of, Arbor, A., Lab, N.F.A.
 
 > Zou, Z., Neural renderer [GitHub](https://github.com/jiupinjia/stylized-neural-painting)
 
-Coming soon...
 
 ## Project-related material
 
