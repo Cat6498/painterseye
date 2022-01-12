@@ -33,7 +33,7 @@ def get_weights(map, pt, strokes_per_layer, method="equal", map_type="final", s=
         patch = map[y_id * s:y_id * s + s, x_id * s:x_id * s + s]
         
         if map_type == "final":
-          weight = s*s - cv2.countNonZero(patch)
+          weight = cv2.countNonZero(patch)
         else:
           weight = np.sum(patch)/total_map
 
