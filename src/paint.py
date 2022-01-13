@@ -225,7 +225,7 @@ def set_nst_args(inp_img, name, sty_img, vec_path, max_n_strokes, trans_mode=1, 
     return args
 
 
-def style_transfer(pt, weights):
+def style_transfer(pt, weights, trans_mode):
 
     pt._load_checkpoint()
     pt.net_G.eval()
@@ -233,7 +233,7 @@ def style_transfer(pt, weights):
     if not os.path.exists(pt.output_dir):
         os.makedirs(pt.output_dir)
 
-    if args.transfer_mode == 1: # transfer color only
+    if trans_mode == 1: # transfer color only
         pt.x_ctt.requires_grad = False
         pt.x_color.requires_grad = True
         pt.x_alpha.requires_grad = False
