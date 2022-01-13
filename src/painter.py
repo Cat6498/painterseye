@@ -340,9 +340,9 @@ class NeuralStyleTransfer(PainterBase):
         self.x_ctt = torch.tensor(npzfile['x_ctt']).to(device)
         self.x_color = torch.tensor(npzfile['x_color']).to(device)
         self.x_alpha = torch.tensor(npzfile['x_alpha']).to(device)
-        self.m_grid = int(np.sqrt(self.x_ctt.shape[0]))
+        self.m_grid = args.m_grid
 
-        self.anchor_id = self.x_ctt.shape[1] - 1
+        self.anchor_id = self.x_ctt.shape[0] - 1
 
         img_ = cv2.imread(args.content_img_path, cv2.IMREAD_COLOR)
         img_ = cv2.cvtColor(img_, cv2.COLOR_BGR2RGB).astype(np.float32) / 255.
