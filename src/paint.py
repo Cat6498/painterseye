@@ -101,6 +101,7 @@ def get_weights(map, pt, method="equal", map_type="final", s=128):
 def set_painter_args(inp_img, name, max_n_strokes, style="oilpaintbrush"):
     parser = argparse.ArgumentParser(description='STYLIZED NEURAL PAINTING')
     args = parser.parse_args(args=[])
+    args.name = name
     args.img_path = inp_img # path to input photo
     args.renderer = style # [watercolor, markerpen, oilpaintbrush, rectangle]
     args.canvas_color = get_background_color(inp_img) # [black, white]
@@ -136,9 +137,9 @@ def paint(pt, method="equal", map_type="final"):
 
     # Pick the map, load it and resize it
     if map_type == "final":
-      map_path = './maps/final.jpg'
+      map_path = './maps/' + args.name + '/final.jpg'
     else:
-      map_path = './maps/finalblend.jpg'
+      map_path = './maps/' + args.name + '/finalblend.jpg'
 
     map = cv2.imread(map_path, cv2.IMREAD_GRAYSCALE)
     map = cv2.resize(map, (pt.m_grid * s, pt.m_grid * s))
