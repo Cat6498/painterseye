@@ -34,7 +34,9 @@ class PainterBase():
         self.G_pred_alpha = None
         self.G_final_pred_canvas = torch.zeros(
             [1, 3, self.net_G.out_size, self.net_G.out_size]).to(device)
-
+        
+        self.canvas_color = args.canvas_color
+        
         self.G_loss = torch.tensor(0.0)
         self.step_id = 0
         self.anchor_id = 0
