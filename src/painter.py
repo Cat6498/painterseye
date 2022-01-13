@@ -204,7 +204,7 @@ class PainterBase():
         self.x_alpha = torch.tensor(self.x_alpha).to(device)
 
 
-    def stroke_sampler(self, image_batches, weights):
+    def stroke_sampler(self, weights):
 
         if self.anchor_id == max(weights)-1:
             return
@@ -305,63 +305,13 @@ class Painter(PainterBase):
         self.final_rendered_images = None
 
 
-    def _drawing_step_states(self):
+    def _drawing_step_states(self, total_strokes):
         acc = self._compute_acc().item()
         print('\riteration step %d, G_loss: %.5f, step_psnr: %.5f, strokes: %d / %d'
               % (self.step_id, self.G_loss.item(), acc,
                  (self.anchor_id+1)*self.m_grid*self.m_grid,
-                 self.max_m_strokes), end="")
+                 total_strokes), end="")
         sys.stdout.flush()
-        vis2 = utils.patches2img(self.G_final_pred_canvas, self.m_grid).clip(min=0, max=1)
-        if self.args.disable_preview:
-            pass
-        else:
-            cv2.namedWindow('G_pred', cv2.WINDOW_NORMAL)
-            cv2.namedWindow('input', cv2.WINDOW_NORMAL)
-            cv2.imshow('G_pred', vis2[:,:,::-1])
-            cv2.imshow('input', self.img_[:, :, ::-1])
-            cv2.waitKey(1)
-
-
-
-
-
-class ProgressivePainter(PainterBase):
-
-    def __init__(self, args):
-        super(ProgressivePainter, self).__init__(args=args)
-
-        self.max_divide = args.max_divide
-
-        self.max_m_strokes = args.max_m_strokes
-
-        self.m_strokes_per_block = self.stroke_parser()
-
-        self.m_grid = 1
-
-        self.img_path = args.img_path
-        self.img_ = cv2.imread(args.img_path, cv2.IMREAD_COLOR)
-        self.img_ = cv2.cvtColor(self.img_, cv2.COLOR_BGR2RGB).astype(np.float32) / 255.
-        self.input_aspect_ratio = self.img_.shape[0] / self.img_.shape[1]
-        self.img_ = cv2.resize(self.img_, (self.net_G.out_size * args.max_divide,
-                                           self.net_G.out_size * args.max_divide), cv2.INTER_AREA)
-
-
-    def stroke_parser(self):
-
-        total_blocks = 0
-        for i in range(0, self.max_divide + 1):
-            total_blocks += i ** 2
-
-        return int(self.max_m_strokes / total_blocks)
-
-
-    def _drawing_step_states(self, max_in_layer):
-        acc = self._compute_acc().item()
-        print('iteration step %d, G_loss: %.5f, step_acc: %.5f, grid_scale: %d / %d, strokes: %d / %d'
-              % (self.step_id, self.G_loss.item(), acc,
-                 self.m_grid, self.max_divide,
-                 self.anchor_id + 1, max_in_layer))
         vis2 = utils.patches2img(self.G_final_pred_canvas, self.m_grid).clip(min=0, max=1)
         if self.args.disable_preview:
             pass
