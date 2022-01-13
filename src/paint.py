@@ -173,7 +173,7 @@ def paint(pt, name, method="equal", map_type="final"):
             pt.x_color.data = torch.clamp(pt.x_color.data, 0, 1)
             pt.x_alpha.data = torch.clamp(pt.x_alpha.data, 0, 1)
 
-            if args.canvas_color == 'white':
+            if pt.canvas_color == 'white':
                 pt.G_pred_canvas = torch.ones(
                     [pt.m_grid ** 2, 3, pt.net_G.out_size, pt.net_G.out_size]).to(device)
             else:
@@ -252,7 +252,7 @@ def style_transfer(pt, weights):
         pt.x_color.data = torch.clamp(pt.x_color.data, 0, 1)
         pt.x_alpha.data = torch.clamp(pt.x_alpha.data, 0, 1)
 
-        if args.canvas_color == 'white':
+        if pt.canvas_color == 'white':
             pt.G_pred_canvas = torch.ones([pt.m_grid*pt.m_grid, 3, pt.net_G.out_size, pt.net_G.out_size]).to(device)
         else:
             pt.G_pred_canvas = torch.zeros(pt.m_grid*pt.m_grid, 3, pt.net_G.out_size, pt.net_G.out_size).to(device)
