@@ -200,7 +200,7 @@ def paint(pt, name, method="equal", map_type="final"):
 
 
 
-def set_nst_args(inp_img, name, sty_img, vec_path, max_n_strokes, trans_mode=1, style="oilpaintbrush"):
+def set_nst_args(inp_img, name, sty_img, vec_path, trans_mode=1, style="oilpaintbrush"):
     parser = argparse.ArgumentParser(description='STYLIZED NEURAL PAINTING')
     args = parser.parse_args(args=[])
     args.content_img_path = inp_img # path to input photo
@@ -212,7 +212,6 @@ def set_nst_args(inp_img, name, sty_img, vec_path, max_n_strokes, trans_mode=1, 
     args.canvas_size = 512 # size of the canvas for stroke rendering'
     args.keep_aspect_ratio = True # keep original image size
 
-    args.max_m_strokes = max_n_strokes # max number of strokes
     args.m_grid = 5 # number of grid divisions to perform
 
     args.beta_L1 = 1.0 # weight for L1 loss
