@@ -92,9 +92,9 @@ class PainterBase():
         d_color = self.rderr.d_color
         d_alpha = self.rderr.d_alpha
 
-        x_ctt = v[:, :, 0:d_shape]
-        x_color = v[:, :, d_shape:d_shape+d_color]
-        x_alpha = v[:, :, d_shape+d_color:d_shape+d_color+d_alpha]
+        x_ctt = v[:, 0:d_shape]
+        x_color = v[:, d_shape:d_shape+d_color]
+        x_alpha = v[:, d_shape+d_color:d_shape+d_color+d_alpha]
         print('saving stroke parameters...')
         file_name = os.path.join(
             self.output_dir, self.img_path.split('/')[-1][:-4])
@@ -102,10 +102,6 @@ class PainterBase():
                  x_color=x_color, x_alpha=x_alpha)
 
     def _shuffle_strokes_and_reshape(self, v):
-
-        grid_idx = list(range(self.m_grid ** 2))
-        random.shuffle(grid_idx)
-        #v = v[grid_idx, :, :]
         v = np.reshape(v, [-1, self.rderr.d])
         v = np.expand_dims(v, axis=0)
 
