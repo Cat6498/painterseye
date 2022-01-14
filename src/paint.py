@@ -177,7 +177,7 @@ def paint(pt, name, method="equal", map_type="final"):
                     [pt.m_grid ** 2, 3, pt.net_G.out_size, pt.net_G.out_size]).to(device)
 
             pt._forward_pass(weights)
-            pt._drawing_step_states(total_strokes)
+            pt._drawing_step_states(max_strokes)
             pt._backward_x()
             pt.optimizer_x.step()
 
