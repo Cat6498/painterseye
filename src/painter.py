@@ -300,12 +300,12 @@ class Painter(PainterBase):
         self.final_rendered_images = None
 
 
-    def _drawing_step_states(self, total_strokes):
+    def _drawing_step_states(self, max_strokes):
         acc = self._compute_acc().item()
-        print('\riteration step %d, G_loss: %.5f, step_psnr: %.5f, strokes: %d / %d'
+        print('\riteration step %d, G_loss: %.5f, step_psnr: %.5f, strokes round: %d / %d'
               % (self.step_id, self.G_loss.item(), acc,
-                 (self.anchor_id+1)*self.m_grid*self.m_grid,
-                 total_strokes), end="")
+                 (self.anchor_id+1),
+                 max_strokes), end="")
         sys.stdout.flush()
         vis2 = utils.patches2img(self.G_final_pred_canvas, self.m_grid).clip(min=0, max=1)
         if self.args.disable_preview:
