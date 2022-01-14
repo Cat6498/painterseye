@@ -21,11 +21,7 @@ def get_weights(map, pt, method="equal", map_type="final", s=128):
     foreground = []
     background = []
     patch_id = 0
-
-    if map_type == "final":
-      threshold = (s*s/2)
-    else:
-      threshold = 1/(pt.m_grid**2)
+    threshold = 0.5
 
     # Iterate throgh each patch
     for y_id in range(pt.m_grid):
@@ -33,7 +29,7 @@ def get_weights(map, pt, method="equal", map_type="final", s=128):
         patch = map[y_id * s:y_id * s + s, x_id * s:x_id * s + s]
         
         if map_type == "final":
-          weight = cv2.countNonZero(patch)
+          weight = cv2.countNonZero(patch)/total_map_nonzero
         else:
           weight = np.sum(patch)/total_map
 
@@ -83,8 +79,8 @@ def get_weights(map, pt, method="equal", map_type="final", s=128):
           weight = np.sum(patch)/total_map
         
         # Get the weight for the patch and if less than 5% set it to 5% of the total strokes (to prevent it from leaving empty spaces)
-        if weight < 0.05:
-          weight = 0.05
+        if weight < 0.01:
+          weight = 0.01
         weight = round(weight*pt.max_m_strokes)
         weights.append(weight)
 
