@@ -204,9 +204,6 @@ class PainterBase():
 
     def stroke_sampler(self, weights):
 
-        if self.anchor_id == max(weights)-1:
-            return
-
         err_maps = torch.sum(
             torch.abs(self.img_batch - self.G_final_pred_canvas),
             dim=1, keepdim=True).detach()
