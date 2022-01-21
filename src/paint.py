@@ -112,7 +112,7 @@ def set_painter_args(inp_img, name, max_n_strokes, style_trans=False, trans_mode
     args.with_ot_loss = True # also use transportation loss
     args.beta_ot = 0.1 # weight for optimal transportation loss
     args.with_sty_loss = style_trans
-    args.beta_sty = 0.5
+    args.beta_sty = 0.2
     args.net_G = 'zou-fusion-net' # renderer architecture
     args.renderer_checkpoint_dir = './checkpoints/checkpoints_G_' + style # dir to load the pretrained neu-renderer
     args.lr = 0.005 # learning rate for stroke searching
@@ -150,6 +150,7 @@ def paint(pt, name, method="equal", map_type="final"):
     pt.initialize_params(total_strokes)
 
     if pt.args.style_transfer:
+      centered = False
       if pt.args.transfer_mode == 1: # transfer color only
         pt.x_ctt.requires_grad = False
         pt.x_color.requires_grad = True
@@ -159,14 +160,15 @@ def paint(pt, name, method="equal", map_type="final"):
         pt.x_color.requires_grad = True
         pt.x_alpha.requires_grad = True
     else:
+      centered = True
       pt.x_ctt.requires_grad = True
       pt.x_color.requires_grad = True
       pt.x_alpha.requires_grad = True
-      
+
     utils.set_requires_grad(pt.net_G, False) # The renderer is already trained
 
     # Define optimizer
-    pt.optimizer_x = optim.RMSprop([pt.x_ctt, pt.x_color, pt.x_alpha], lr=pt.lr, centered=True)
+    pt.optimizer_x = optim.RMSprop([pt.x_ctt, pt.x_color, pt.x_alpha], lr=pt.lr, centered=centered)
 
     pt.step_id = 0
 
@@ -176,7 +178,7 @@ def paint(pt, name, method="equal", map_type="final"):
         pt.stroke_sampler(weights)
             
         # get how many iterations each stroke gets (optimisation)
-        iters_per_stroke = int(500 / pt.m_strokes_per_block)
+        iters_per_stroke = 50
 
         for i in range(iters_per_stroke):
 
