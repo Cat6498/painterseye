@@ -147,11 +147,22 @@ def paint(pt, name, method="equal", map_type="final"):
     
     # Get the weigths, the total number of strokes in the layer, and the maximum number of stroke for a patch
     weights, total_strokes, max_strokes = get_weights(map, pt, method, map_type, s)
-
     pt.initialize_params(total_strokes)
-    pt.x_ctt.requires_grad = True
-    pt.x_color.requires_grad = True
-    pt.x_alpha.requires_grad = True
+
+    if pt.args.style_transfer:
+      if pt.args.transfer_mode == 1: # transfer color only
+        pt.x_ctt.requires_grad = False
+        pt.x_color.requires_grad = True
+        pt.x_alpha.requires_grad = False
+      else: # transfer both color and texture
+        pt.x_ctt.requires_grad = True
+        pt.x_color.requires_grad = True
+        pt.x_alpha.requires_grad = True
+    else:
+      pt.x_ctt.requires_grad = True
+      pt.x_color.requires_grad = True
+      pt.x_alpha.requires_grad = True
+      
     utils.set_requires_grad(pt.net_G, False) # The renderer is already trained
 
     # Define optimizer
