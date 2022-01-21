@@ -94,10 +94,14 @@ def get_weights(map, pt, method="equal", map_type="final", s=128):
 
 
 
-def set_painter_args(inp_img, name, max_n_strokes, style="oilpaintbrush"):
+def set_painter_args(inp_img, name, max_n_strokes, style_trans=False, trans_mode=1, sty_img="", style="oilpaintbrush"):
     parser = argparse.ArgumentParser(description='STYLIZED NEURAL PAINTING')
     args = parser.parse_args(args=[])
     args.img_path = inp_img # path to input photo
+    args.style_transfer = style_trans
+    if style_trans:
+      args.transfer_mode = trans_mode
+      args.style_img_path = sty_img
     args.renderer = style # [watercolor, markerpen, oilpaintbrush, rectangle]
     args.canvas_color = get_background_color(inp_img) # [black, white]
     args.canvas_size = 512 # size of the canvas for stroke rendering'
@@ -107,6 +111,8 @@ def set_painter_args(inp_img, name, max_n_strokes, style="oilpaintbrush"):
     args.beta_L1 = 1.0 # weight for L1 loss
     args.with_ot_loss = True # also use transportation loss
     args.beta_ot = 0.1 # weight for optimal transportation loss
+    args.with_sty_loss = style_trans
+    args.beta_sty = 0.5
     args.net_G = 'zou-fusion-net' # renderer architecture
     args.renderer_checkpoint_dir = './checkpoints/checkpoints_G_' + style # dir to load the pretrained neu-renderer
     args.lr = 0.005 # learning rate for stroke searching

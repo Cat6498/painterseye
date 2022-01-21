@@ -232,11 +232,17 @@ class PainterBase():
     def _backward_x(self):
 
         self.G_loss = 0
-        self.G_loss += self.args.beta_L1 * self._pxl_loss(
-            canvas=self.G_final_pred_canvas, gt=self.img_batch)
         if self.args.with_ot_loss:
             self.G_loss += self.args.beta_ot * self._sinkhorn_loss(
                 self.G_final_pred_canvas, self.img_batch)
+        if self.args.with_sty_loss:
+            canvas = utils.patches2img(self.G_final_pred_canvas, self.m_grid, to_numpy=False).to(device)
+            self.G_loss = self.args.beta_L1 * self._pxl_loss(
+                canvas=self.G_final_pred_canvas, gt=self.img_batch, ignore_color=True)
+            self.G_loss += self.args.beta_sty * self._style_loss(canvas, self.style_img)
+        else:
+            self.G_loss += self.args.beta_L1 * self._pxl_loss(
+                canvas=self.G_final_pred_canvas, gt=self.img_batch)
         self.G_loss.backward()
 
 
@@ -298,7 +304,16 @@ class Painter(PainterBase):
         self.img_batch = utils.img2patches(self.img_, args.m_grid, self.net_G.out_size).to(device)
 
         self.final_rendered_images = None
+        
+        if args.style_transfer:
+            self._style_loss = loss.VGGStyleLoss(transfer_mode=args.transfer_mode, resize=True)
+            style_img = cv2.imread(args.style_img_path, cv2.IMREAD_COLOR)
+            self.style_img_ = cv2.cvtColor(style_img, cv2.COLOR_BGR2RGB).astype(np.float32) / 255.
+            self.style_img = cv2.blur(cv2.resize(self.style_img_, (128, 128)), (2, 2))
+            self.style_img = torch.tensor(self.style_img).permute([2, 0, 1]).unsqueeze(0).to(device)
+            self.style_img_path = args.style_img_path
 
+            
 
     def _drawing_step_states(self, max_strokes):
         acc = self._compute_acc().item()
