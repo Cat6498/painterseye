@@ -114,7 +114,7 @@ def set_painter_args(inp_img, name, max_n_strokes, style_trans=False, sty_img=""
     args.with_ot_loss = True # also use transportation loss
     args.beta_ot = 0.1 # weight for optimal transportation loss
     args.with_sty_loss = style_trans
-    args.beta_sty = 0.2
+    args.beta_sty = 0.5
     args.net_G = 'zou-fusion-net' # renderer architecture
     args.renderer_checkpoint_dir = './checkpoints/checkpoints_G_' + style # dir to load the pretrained neu-renderer
     args.lr = 0.005 # learning rate for stroke searching
@@ -134,7 +134,7 @@ def paint(pt, name, method="equal", map_type="final"):
 
     print('begin drawing...')
 
-    s = 128
+    s = 128 # size of output network
 
     # Pick the map, load it and resize it
     if map_type == "final":
@@ -166,7 +166,7 @@ def paint(pt, name, method="equal", map_type="final"):
         pt.stroke_sampler(weights)
             
         # how many iterations each stroke gets (optimisation)
-        iters_per_stroke = 50
+        iters_per_stroke = total_strokes/max_strokes
 
         for i in range(iters_per_stroke):
 
