@@ -104,6 +104,7 @@ def set_painter_args(inp_img, name, max_n_strokes, style_trans=False, sty_img=""
     args.style_transfer = style_trans
     if style_trans:
       args.style_img_path = sty_img
+      args.transfer_mode = 1
     args.renderer = style # [watercolor, markerpen, oilpaintbrush, rectangle]
     args.canvas_color = get_background_color(inp_img) # [black, white]
     args.canvas_size = 512 # size of the canvas for stroke rendering'
