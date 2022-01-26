@@ -11,6 +11,8 @@ def get_weights(map, pt, method="equal", map_type="final", s=128):
   weights = []
   total_map = np.sum(map)
   total_map_nonzero = cv2.countNonZero(map)
+
+  # Revert to baseline approach if the maps are empty (or almost)
   if total_map < 0.1:
     weight = round(pt.max_m_strokes/pt.m_grid**2)
     for i in range(pt.m_grid**2):
@@ -93,14 +95,14 @@ def get_weights(map, pt, method="equal", map_type="final", s=128):
   return weights, total_strokes_layer, max_in_patch
 
 
+# PAINTER - intrinsic and explicit style transfer
 
-def set_painter_args(inp_img, name, max_n_strokes, style_trans=False, trans_mode=1, sty_img="", style="oilpaintbrush"):
+def set_painter_args(inp_img, name, max_n_strokes, style_trans=False, sty_img="", style="oilpaintbrush"):
     parser = argparse.ArgumentParser(description='STYLIZED NEURAL PAINTING')
     args = parser.parse_args(args=[])
     args.img_path = inp_img # path to input photo
     args.style_transfer = style_trans
     if style_trans:
-      args.transfer_mode = trans_mode
       args.style_img_path = sty_img
     args.renderer = style # [watercolor, markerpen, oilpaintbrush, rectangle]
     args.canvas_color = get_background_color(inp_img) # [black, white]
@@ -133,8 +135,6 @@ def paint(pt, name, method="equal", map_type="final"):
     print('begin drawing...')
 
     s = 128
-    
-    image_batches = {i: pt.img_batch[i] for i in range(pt.m_grid**2)}
 
     # Pick the map, load it and resize it
     if map_type == "final":
@@ -148,36 +148,24 @@ def paint(pt, name, method="equal", map_type="final"):
     # Get the weigths, the total number of strokes in the layer, and the maximum number of stroke for a patch
     weights, total_strokes, max_strokes = get_weights(map, pt, method, map_type, s)
     pt.initialize_params(total_strokes)
-
-    if pt.args.style_transfer:
-      centered = False
-      if pt.args.transfer_mode == 1: # transfer color only
-        pt.x_ctt.requires_grad = False
-        pt.x_color.requires_grad = True
-        pt.x_alpha.requires_grad = False
-      else: # transfer both color and texture
-        pt.x_ctt.requires_grad = True
-        pt.x_color.requires_grad = True
-        pt.x_alpha.requires_grad = True
-    else:
-      centered = True
-      pt.x_ctt.requires_grad = True
-      pt.x_color.requires_grad = True
-      pt.x_alpha.requires_grad = True
-
+      
+    pt.x_ctt.requires_grad = True
+    pt.x_color.requires_grad = True
+    pt.x_alpha.requires_grad = True
     utils.set_requires_grad(pt.net_G, False) # The renderer is already trained
 
     # Define optimizer
+    centered = False if pt.args.style_transfer else True
     pt.optimizer_x = optim.RMSprop([pt.x_ctt, pt.x_color, pt.x_alpha], lr=pt.lr, centered=centered)
 
     pt.step_id = 0
 
-    # for each stroke set (1-per-patch)
+    # for each stroke round
     for pt.anchor_id in range(0, max_strokes):
         # sample the action vectors
         pt.stroke_sampler(weights)
             
-        # get how many iterations each stroke gets (optimisation)
+        # how many iterations each stroke gets (optimisation)
         iters_per_stroke = 50
 
         for i in range(iters_per_stroke):
@@ -214,6 +202,7 @@ def paint(pt, name, method="equal", map_type="final"):
     return weights
 
 
+# STYLE TRANSFER - on precomputed brushstrokes
 
 def set_nst_args(inp_img, name, sty_img, vec_path, trans_mode=1, style="oilpaintbrush"):
     parser = argparse.ArgumentParser(description='STYLIZED NEURAL PAINTING')
@@ -237,6 +226,7 @@ def set_nst_args(inp_img, name, sty_img, vec_path, trans_mode=1, style="oilpaint
     args.output_dir = './output/' + name + "/style_trans" # dir to save painting results
     args.disable_preview = True # disable cv2.imshow
     return args
+
 
 
 def style_transfer(pt, weights, trans_mode):

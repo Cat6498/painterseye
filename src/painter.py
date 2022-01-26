@@ -11,10 +11,6 @@ import renderer
 
 import torch
 
-# Decide which device we want to run on
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-
 class PainterBase():
     def __init__(self, args):
         self.args = args
@@ -86,6 +82,7 @@ class PainterBase():
 
         return psnr
 
+
     def _save_stroke_params(self, v):
 
         d_shape = self.rderr.d_shape
@@ -95,17 +92,19 @@ class PainterBase():
         x_ctt = v[:, 0:d_shape]
         x_color = v[:, d_shape:d_shape+d_color]
         x_alpha = v[:, d_shape+d_color:d_shape+d_color+d_alpha]
-        print('saving stroke parameters...')
+        print('\nsaving stroke parameters...')
         file_name = os.path.join(
             self.output_dir, self.img_path.split('/')[-1][:-4])
         np.savez(file_name + '_strokes.npz', x_ctt=x_ctt,
                  x_color=x_color, x_alpha=x_alpha)
+
 
     def _shuffle_strokes_and_reshape(self, v):
         v = np.reshape(v, [-1, self.rderr.d])
         v = np.expand_dims(v, axis=0)
 
         return v
+
 
     def _render(self, v, save_jpgs=True, save_video=True):
 
@@ -154,8 +153,6 @@ class PainterBase():
         plt.imsave(file_name + '_final.png', final_rendered_image)
 
         return final_rendered_image
-
-
 
 
     def _normalize_strokes(self, v, weights):
@@ -375,7 +372,7 @@ class NeuralStyleTransfer(PainterBase):
 
     def _style_transfer_step_states(self):
         acc = self._compute_acc().item()
-        print('running style transfer... iteration step %d, G_loss: %.5f, step_psnr: %.5f'
+        print('\rrunning style transfer... iteration step %d, G_loss: %.5f, step_psnr: %.5f'
               % (self.step_id, self.G_loss.item(), acc))
         vis2 = utils.patches2img(self.G_final_pred_canvas, self.m_grid).clip(min=0, max=1)
         if self.args.disable_preview:
@@ -430,7 +427,7 @@ class NeuralStyleTransfer(PainterBase):
             out_h = self.args.canvas_size
             out_w = self.args.canvas_size
 
-        print('saving style transfer results...')
+        print('\nsaving style transfer results...')
 
         file_dir = os.path.join(
             self.output_dir, self.content_img_path.split('/')[-1][:-4])
