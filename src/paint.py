@@ -11,6 +11,8 @@ def get_weights(map, pt, method="equal", map_type="final", s=128):
   weights = []
   total_map = np.sum(map)
   total_map_nonzero = cv2.countNonZero(map)
+
+  # Revert to baseline approach if the maps are empty (or almost)
   if total_map < 0.1:
     weight = round(pt.max_m_strokes/pt.m_grid**2)
     for i in range(pt.m_grid**2):
@@ -93,11 +95,16 @@ def get_weights(map, pt, method="equal", map_type="final", s=128):
   return weights, total_strokes_layer, max_in_patch
 
 
+# PAINTER - intrinsic and explicit style transfer
 
-def set_painter_args(inp_img, name, max_n_strokes, style="oilpaintbrush"):
+def set_painter_args(inp_img, name, max_n_strokes, style_trans=False, sty_img="", style="oilpaintbrush"):
     parser = argparse.ArgumentParser(description='STYLIZED NEURAL PAINTING')
     args = parser.parse_args(args=[])
     args.img_path = inp_img # path to input photo
+    args.style_transfer = style_trans
+    if style_trans:
+      args.style_img_path = sty_img
+      args.transfer_mode = 1
     args.renderer = style # [watercolor, markerpen, oilpaintbrush, rectangle]
     args.canvas_color = get_background_color(inp_img) # [black, white]
     args.canvas_size = 512 # size of the canvas for stroke rendering'
@@ -107,6 +114,8 @@ def set_painter_args(inp_img, name, max_n_strokes, style="oilpaintbrush"):
     args.beta_L1 = 1.0 # weight for L1 loss
     args.with_ot_loss = True # also use transportation loss
     args.beta_ot = 0.1 # weight for optimal transportation loss
+    args.with_sty_loss = style_trans
+    args.beta_sty = 0.05
     args.net_G = 'zou-fusion-net' # renderer architecture
     args.renderer_checkpoint_dir = './checkpoints/checkpoints_G_' + style # dir to load the pretrained neu-renderer
     args.lr = 0.005 # learning rate for stroke searching
@@ -126,9 +135,7 @@ def paint(pt, name, method="equal", map_type="final"):
 
     print('begin drawing...')
 
-    s = 128
-    
-    image_batches = {i: pt.img_batch[i] for i in range(pt.m_grid**2)}
+    s = 128 # size of output network
 
     # Pick the map, load it and resize it
     if map_type == "final":
@@ -141,25 +148,26 @@ def paint(pt, name, method="equal", map_type="final"):
     
     # Get the weigths, the total number of strokes in the layer, and the maximum number of stroke for a patch
     weights, total_strokes, max_strokes = get_weights(map, pt, method, map_type, s)
-
     pt.initialize_params(total_strokes)
+      
     pt.x_ctt.requires_grad = True
     pt.x_color.requires_grad = True
     pt.x_alpha.requires_grad = True
     utils.set_requires_grad(pt.net_G, False) # The renderer is already trained
 
     # Define optimizer
-    pt.optimizer_x = optim.RMSprop([pt.x_ctt, pt.x_color, pt.x_alpha], lr=pt.lr, centered=True)
+    centered = False if pt.args.style_transfer else True
+    pt.optimizer_x = optim.RMSprop([pt.x_ctt, pt.x_color, pt.x_alpha], lr=pt.lr, centered=centered)
 
     pt.step_id = 0
 
-    # for each stroke set (1-per-patch)
+    # for each stroke round
     for pt.anchor_id in range(0, max_strokes):
         # sample the action vectors
         pt.stroke_sampler(weights)
             
-        # get how many iterations each stroke gets (optimisation)
-        iters_per_stroke = int(500 / pt.m_strokes_per_block)
+        # how many iterations each stroke gets (optimisation)
+        iters_per_stroke = int(total_strokes/max_strokes)
 
         for i in range(iters_per_stroke):
 
@@ -195,6 +203,7 @@ def paint(pt, name, method="equal", map_type="final"):
     return weights
 
 
+# STYLE TRANSFER - on precomputed brushstrokes
 
 def set_nst_args(inp_img, name, sty_img, vec_path, trans_mode=1, style="oilpaintbrush"):
     parser = argparse.ArgumentParser(description='STYLIZED NEURAL PAINTING')
@@ -218,6 +227,7 @@ def set_nst_args(inp_img, name, sty_img, vec_path, trans_mode=1, style="oilpaint
     args.output_dir = './output/' + name + "/style_trans" # dir to save painting results
     args.disable_preview = True # disable cv2.imshow
     return args
+
 
 
 def style_transfer(pt, weights, trans_mode):

@@ -11,10 +11,6 @@ import renderer
 
 import torch
 
-# Decide which device we want to run on
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-
 class PainterBase():
     def __init__(self, args):
         self.args = args
@@ -86,6 +82,7 @@ class PainterBase():
 
         return psnr
 
+
     def _save_stroke_params(self, v):
 
         d_shape = self.rderr.d_shape
@@ -95,17 +92,19 @@ class PainterBase():
         x_ctt = v[:, 0:d_shape]
         x_color = v[:, d_shape:d_shape+d_color]
         x_alpha = v[:, d_shape+d_color:d_shape+d_color+d_alpha]
-        print('saving stroke parameters...')
+        print('\nsaving stroke parameters...')
         file_name = os.path.join(
             self.output_dir, self.img_path.split('/')[-1][:-4])
         np.savez(file_name + '_strokes.npz', x_ctt=x_ctt,
                  x_color=x_color, x_alpha=x_alpha)
+
 
     def _shuffle_strokes_and_reshape(self, v):
         v = np.reshape(v, [-1, self.rderr.d])
         v = np.expand_dims(v, axis=0)
 
         return v
+
 
     def _render(self, v, save_jpgs=True, save_video=True):
 
@@ -154,8 +153,6 @@ class PainterBase():
         plt.imsave(file_name + '_final.png', final_rendered_image)
 
         return final_rendered_image
-
-
 
 
     def _normalize_strokes(self, v, weights):
@@ -232,11 +229,17 @@ class PainterBase():
     def _backward_x(self):
 
         self.G_loss = 0
-        self.G_loss += self.args.beta_L1 * self._pxl_loss(
-            canvas=self.G_final_pred_canvas, gt=self.img_batch)
         if self.args.with_ot_loss:
             self.G_loss += self.args.beta_ot * self._sinkhorn_loss(
                 self.G_final_pred_canvas, self.img_batch)
+        if self.args.with_sty_loss:
+            canvas = utils.patches2img(self.G_final_pred_canvas, self.m_grid, to_numpy=False).to(device)
+            self.G_loss = self.args.beta_L1 * self._pxl_loss(
+                canvas=self.G_final_pred_canvas, gt=self.img_batch, ignore_color=True)
+            self.G_loss += self.args.beta_sty * self._style_loss(canvas, self.style_img)
+        else:
+            self.G_loss += self.args.beta_L1 * self._pxl_loss(
+                canvas=self.G_final_pred_canvas, gt=self.img_batch)
         self.G_loss.backward()
 
 
@@ -298,7 +301,16 @@ class Painter(PainterBase):
         self.img_batch = utils.img2patches(self.img_, args.m_grid, self.net_G.out_size).to(device)
 
         self.final_rendered_images = None
+        
+        if args.style_transfer:
+            self._style_loss = loss.VGGStyleLoss(transfer_mode=args.transfer_mode, resize=True)
+            style_img = cv2.imread(args.style_img_path, cv2.IMREAD_COLOR)
+            self.style_img_ = cv2.cvtColor(style_img, cv2.COLOR_BGR2RGB).astype(np.float32) / 255.
+            self.style_img = cv2.blur(cv2.resize(self.style_img_, (128, 128)), (2, 2))
+            self.style_img = torch.tensor(self.style_img).permute([2, 0, 1]).unsqueeze(0).to(device)
+            self.style_img_path = args.style_img_path
 
+            
 
     def _drawing_step_states(self, max_strokes):
         acc = self._compute_acc().item()
@@ -360,7 +372,7 @@ class NeuralStyleTransfer(PainterBase):
 
     def _style_transfer_step_states(self):
         acc = self._compute_acc().item()
-        print('running style transfer... iteration step %d, G_loss: %.5f, step_psnr: %.5f'
+        print('\rrunning style transfer... iteration step %d, G_loss: %.5f, step_psnr: %.5f'
               % (self.step_id, self.G_loss.item(), acc))
         vis2 = utils.patches2img(self.G_final_pred_canvas, self.m_grid).clip(min=0, max=1)
         if self.args.disable_preview:
@@ -415,7 +427,7 @@ class NeuralStyleTransfer(PainterBase):
             out_h = self.args.canvas_size
             out_w = self.args.canvas_size
 
-        print('saving style transfer results...')
+        print('\nsaving style transfer results...')
 
         file_dir = os.path.join(
             self.output_dir, self.content_img_path.split('/')[-1][:-4])
