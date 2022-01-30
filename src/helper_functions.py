@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+import pandas as pd
+from skimage.metrics import structural_similarity
 
 def resize_inp_img(inp_img):
   image = cv2.imread(inp_img)
@@ -18,3 +20,46 @@ def get_background_color(inp_img):
     return "white"
   else:
     return "black"
+
+def evaluate_result(target, result, baseline, picture_name, weights, map, type, method="direct"):
+  target = cv2.imread("input/doggo.jpg", cv2.IMREAD_COLOR)
+  result = cv2.imread("output/doggo/doggo_final.png", cv2.IMREAD_COLOR)
+  target = cv2.resize(target, (result.shape[1], result.shape[0]))
+
+  if type != 2: 
+    mse = np.mean((result - target)**2)
+    mrse = np.sqrt(mse)
+
+    l1 = np.mean(np.abs(result - target))
+
+    psnr = 20 * np.log10(255.0/mrse)
+
+    ssim = structural_similarity(result, target, data_range=target.max() - target.min(), multichannel=True)
+
+    if type == 0: # normal painting
+      data = pd.DataFrame({"image name":[picture_name], "baseline": [baseline], "weights":[weights], "map":[map], 
+              "mse":[mse], "mrse":[mrse], "l1":[l1], "psnr":[psnr], "ssim":[ssim]})
+      data.to_csv("./results.csv", index=False, mode='a', header=None)
+
+    elif type == 1: # style transfer
+      data = pd.DataFrame({"image name":[picture_name], "baseline": [baseline], "method":[method], "weights":[weights], "map":[map], 
+              "mse":[mse], "mrse":[mrse], "l1":[l1], "psnr":[psnr], "ssim":[ssim]})
+      data.to_csv("./results_style.csv", index=False, mode='a', header=None)
+    
+  else: # only on masked objects
+    map_name = "maps/" + picture_name + "/" + map + ".jpg"
+    map = cv2.imread(map_name, cv2.IMREAD_GRAYSCALE)
+    map = cv2.resize(map, (result.shape[1], result.shape[0]))
+
+    mse = np.mean((result[map != 0] - target[map != 0])**2)
+    mrse = np.sqrt(mse)
+
+    l1 = np.mean(np.abs(result[map != 0] - target[map != 0]))
+
+    psnr = 20 * np.log10(255.0/mrse)
+
+    ssim = structural_similarity(result[map != 0], target[map != 0], data_range=target.max() - target.min(), multichannel=True)
+
+    data = pd.DataFrame({"image name":[picture_name], "baseline": [baseline], "weights":[weights], "map":[map], 
+              "mse":[mse], "mrse":[mrse], "l1":[l1], "psnr":[psnr], "ssim":[ssim]})
+    data.to_csv("./results_objects.csv", index=False, mode='a', header=None)
