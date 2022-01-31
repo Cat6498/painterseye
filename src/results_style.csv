@@ -1,1 +1,1 @@
-picture_name,baseline,method,weights,map,mse,mrse,l1,psnr,ssim
+picture_name,baseline,method,weights,map,ext_G,ext_psnr,mse,mrse,l1,psnr,ssim
