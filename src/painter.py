@@ -314,8 +314,9 @@ class Painter(PainterBase):
 
     def _drawing_step_states(self, max_strokes):
         acc = self._compute_acc().item()
+        loss = self.G_loss.item()
         print('\riteration step %d, G_loss: %.5f, step_psnr: %.5f, strokes round: %d / %d'
-              % (self.step_id, self.G_loss.item(), acc,
+              % (self.step_id, loss, acc,
                  (self.anchor_id+1),
                  max_strokes), end="")
         sys.stdout.flush()
@@ -328,6 +329,7 @@ class Painter(PainterBase):
             cv2.imshow('G_pred', vis2[:,:,::-1])
             cv2.imshow('input', self.img_[:, :, ::-1])
             cv2.waitKey(1)
+        return loss, acc
 
 
 
@@ -372,8 +374,9 @@ class NeuralStyleTransfer(PainterBase):
 
     def _style_transfer_step_states(self):
         acc = self._compute_acc().item()
+        loss = self.G_loss.item()
         print('\rrunning style transfer... iteration step %d, G_loss: %.5f, step_psnr: %.5f'
-              % (self.step_id, self.G_loss.item(), acc))
+              % (self.step_id, loss, acc))
         vis2 = utils.patches2img(self.G_final_pred_canvas, self.m_grid).clip(min=0, max=1)
         if self.args.disable_preview:
             pass
@@ -385,6 +388,7 @@ class NeuralStyleTransfer(PainterBase):
             cv2.imshow('input', self.img_[:, :, ::-1])
             cv2.imshow('style_img', self.style_img_[:, :, ::-1])
             cv2.waitKey(1)
+        return loss, acc
 
 
     def _backward_x_sty(self):

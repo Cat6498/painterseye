@@ -161,6 +161,10 @@ def paint(pt, name, method="equal", map_type="final"):
 
     pt.step_id = 0
 
+    # for evaluation
+    loss = 0
+    acc = 0
+
     # for each stroke round
     for pt.anchor_id in range(0, max_strokes):
         # sample the action vectors
@@ -185,7 +189,7 @@ def paint(pt, name, method="equal", map_type="final"):
                     [pt.m_grid ** 2, 3, pt.net_G.out_size, pt.net_G.out_size]).to(device)
 
             pt._forward_pass(weights)
-            pt._drawing_step_states(max_strokes)
+            loss, acc = pt._drawing_step_states(max_strokes)
             pt._backward_x()
             pt.optimizer_x.step()
 
@@ -200,7 +204,7 @@ def paint(pt, name, method="equal", map_type="final"):
     v_n = pt._normalize_strokes(pt.x, weights)
     v_n = pt._shuffle_strokes_and_reshape(v_n)
     final_rendered_image = pt._render(v_n, save_jpgs=False, save_video=True)
-    return weights
+    return weights, loss, acc
 
 
 # STYLE TRANSFER - on precomputed brushstrokes
@@ -235,6 +239,8 @@ def style_transfer(pt, weights, trans_mode):
     pt._load_checkpoint()
     pt.net_G.eval()
 
+    loss, acc = 0, 0
+
     if not os.path.exists(pt.output_dir):
         os.makedirs(pt.output_dir)
 
@@ -263,7 +269,7 @@ def style_transfer(pt, weights, trans_mode):
             pt.G_pred_canvas = torch.zeros(pt.m_grid*pt.m_grid, 3, pt.net_G.out_size, pt.net_G.out_size).to(device)
 
         pt._forward_pass(weights)
-        pt._style_transfer_step_states()
+        loss, acc = pt._style_transfer_step_states()
         pt._backward_x_sty()
         pt.optimizer_x_sty.step()
 
@@ -278,3 +284,4 @@ def style_transfer(pt, weights, trans_mode):
     v_n = pt._shuffle_strokes_and_reshape(v_n)
     final_rendered_image = pt._render(v_n, save_jpgs=False, save_video=False)
     pt._save_style_transfer_images(final_rendered_image)
+    return loss, acc
