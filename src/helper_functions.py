@@ -21,7 +21,7 @@ def get_background_color(inp_img):
   else:
     return "black"
 
-def evaluate_result(inp_img, res_name, baseline, picture_name, weights, use_map, trans_type=0, method="direct"):
+def evaluate_result(inp_img, res_name, baseline, picture_name, weights, use_map, ext_G, ext_psnr, trans_type=0, method="direct"):
   target = cv2.imread(inp_img, cv2.IMREAD_COLOR)
   result = cv2.imread(res_name, cv2.IMREAD_COLOR)
   target = cv2.resize(target, (result.shape[1], result.shape[0]))
@@ -37,12 +37,12 @@ def evaluate_result(inp_img, res_name, baseline, picture_name, weights, use_map,
     ssim = structural_similarity(result, target, data_range=target.max() - target.min(), multichannel=True)
 
     if trans_type == 0: # normal painting
-      data = pd.DataFrame({"image name":[picture_name], "baseline": [baseline], "weights":[weights], "map":[use_map], 
+      data = pd.DataFrame({"image name":[picture_name], "baseline": [baseline], "weights":[weights], "map":[use_map], "ext G":[ext_G], "ext psnr":[ext_psnr],
               "mse":[mse], "mrse":[mrse], "l1":[l1], "psnr":[psnr], "ssim":[ssim]})
       data.to_csv("./results.csv", index=False, mode='a', header=None)
 
     elif trans_type == 1: # style transfer
-      data = pd.DataFrame({"image name":[picture_name], "baseline": [baseline], "method":[method], "weights":[weights], "map":[use_map], 
+      data = pd.DataFrame({"image name":[picture_name], "baseline": [baseline], "method":[method], "weights":[weights], "map":[use_map], "ext G":[ext_G], "ext psnr":[ext_psnr],
               "mse":[mse], "mrse":[mrse], "l1":[l1], "psnr":[psnr], "ssim":[ssim]})
       data.to_csv("./results_style.csv", index=False, mode='a', header=None)
     
@@ -60,6 +60,6 @@ def evaluate_result(inp_img, res_name, baseline, picture_name, weights, use_map,
 
     ssim = structural_similarity(result[mapb != 0], target[mapb != 0], data_range=target.max() - target.min(), multichannel=True)
 
-    data = pd.DataFrame({"image name":[picture_name], "baseline": [baseline], "weights":[weights], "map":[use_map], 
+    data = pd.DataFrame({"image name":[picture_name], "baseline": [baseline], "weights":[weights], "map":[use_map], "ext G":[ext_G], "ext psnr":[ext_psnr],
               "mse":[mse], "mrse":[mrse], "l1":[l1], "psnr":[psnr], "ssim":[ssim]})
     data.to_csv("./results_objects.csv", index=False, mode='a', header=None)
