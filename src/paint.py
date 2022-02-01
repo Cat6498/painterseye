@@ -148,7 +148,6 @@ def paint(pt, name, method="equal", map_type="final"):
     
     # Get the weigths, the total number of strokes in the layer, and the maximum number of stroke for a patch
     weights, total_strokes, max_strokes = get_weights(map, pt, method, map_type, s)
-    mean_weight = (sum(weights[1:]))/(len(weights)-1)
     pt.initialize_params(total_strokes)
       
     pt.x_ctt.requires_grad = True
@@ -172,7 +171,7 @@ def paint(pt, name, method="equal", map_type="final"):
         pt.stroke_sampler(weights)
             
         # how many iterations each stroke gets (optimisation)
-        iters_per_stroke = int(total_strokes/mean_weight)
+        iters_per_stroke = int(total_strokes/max_strokes)
 
         for i in range(iters_per_stroke):
 
