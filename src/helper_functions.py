@@ -47,7 +47,8 @@ def evaluate_result(inp_img, res_name, baseline, picture_name, weights, use_map,
       data.to_csv("./results_style.csv", index=False, mode='a', header=None)
     
   else: # only on masked objects
-    map_name = "maps/" + picture_name + "/" + use_map + ".jpg"
+    partial_name = "finalblend" if use_map == "blend" else "final"
+    map_name = "maps/" + picture_name + "/" + partial_name + ".jpg"
     mapb = cv2.imread(map_name, cv2.IMREAD_GRAYSCALE)
     mapb = cv2.resize(mapb, (result.shape[1], result.shape[0]))
 
