@@ -203,7 +203,7 @@ def paint(pt, name, method="equal", map_type="final"):
     pt._save_stroke_params(v)
     v_n = pt._normalize_strokes(pt.x, weights)
     v_n = pt._shuffle_strokes_and_reshape(v_n)
-    final_rendered_image = pt._render(v_n, save_jpgs=True, save_video=True)
+    final_rendered_image = pt._render(v_n, weights, save_jpgs=True, save_video=True)
     return weights, loss, acc
 
 
