@@ -370,7 +370,7 @@
 
 ### 14 Mar 2022
 
-*4 hours* Working on evaluation
+* *4 hours* Working on evaluation
 
 ### 17 Mar 2022
 
