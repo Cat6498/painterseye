@@ -214,10 +214,6 @@
 
 * *6 hours* Finished refactoring, some bug fixing in the map generation and weight distribution, added function to automatically download and unzip the checkpoints for the models (directly from the original models), did a bit of restructuring of the project folder and worked on git documentation
 
-### 5 Jan 2022
-
-* *3 hours* Started writing documentation for the readme and processing images for evaluation
-
 <br />
 
 
@@ -226,9 +222,193 @@
 
 ### 12 Jan 2022
 
-* *3 hours* Finished documentation for the readme and continued processing images for evaluation
+* *3 hours* Written readme documentation and added images
 
+### 13 Jan 2022
 
+* *5 hours* Started to work on style transfer. Not working
+
+### 14 Jan 2022
+
+* *3 hours* Fixed style transfer
+
+<br />
+
+## Week 14 
+
+### 20 Jan 2022
+
+* *30 mins* Eleventh meeting with Nicolass
+
+### 21 Jan 2022
+
+* *3 hours* Started attempting to blend style transfer into the painting process directly
+
+### 26 Jan 2022
+
+* *3 hours* Finished blending style transfer into the painting process
+
+<br />
+
+## Week 15
+
+### 27 Jan 2022
+
+* *30 mins* Twelfth meeting with Nicolas
+
+### 30 Jan 2022
+
+* *3 hours* Tweaked style transfer weights for the loss, started working on evaluation code
+
+### 31 Jan 2022
+
+* *3 hours* Kept working on evaluation code
+
+### 1 Feb 2022
+
+<br />
+
+## Week 16
+
+*No meeting this week*
+
+### 6 Feb 2022
+
+* *2 hours* Fixed bugs in evaluation and tweaked settings
+
+### 7 Feb 2022
+
+* *5 hours* Started processing images for evaluation
+
+## 8 Feb 2022
+
+* *3 hours* Processing images for evaluation, working on disseration draft
+
+## 9 Feb 2022
+
+* *5 hours* Processing images for evaluation, working on dissertation draft
+
+<br />
+
+## Week 17
+
+### 11 Feb 2022
+
+* *30 mins* Thirteenth meeting with Nicolas
+
+### 13 Feb 2022
+
+* *3 hours* Processed more images, worked on dissertation draft
+
+### 14 Feb 2022
+
+* *3 hours* Started working on questionnaire for qualitative evaluation
+
+<br />
+
+## Week 18
+
+### 17 Feb 2022
+
+* *30 mins* Fourteenth meeting with Nicolas
+* *2 hours* Kept working on the questionnaire
+
+### 19 Feb 2022
+
+* *3 hours* Finished dissertation draft, sent the questionnaire out
+
+### 20 Feb 2022
+
+* *2 hours* Started working on refined draft
+
+### 22 Feb 2022
+
+* *2 hours* Started plotting data for quantitative evaluation
+
+<br />
+
+## Week 19
+
+### 24 Feb 2022
+
+* *30 mins* Fifteenth meeting with Nicolas
+* *2 hours* Kept working on second draft, finished first three chapters
+
+### 26 Feb 2022
+
+* *2 hours* Kept working on quantitative evaluation
+
+### 25 Feb 2022
+
+* *4 hours* Wrote the design chapter
+
+<br />
+
+## Week 20
+
+### 03 Mar 2022
+
+* *30 min* Sixteenth meeting with Nicolas
+
+### 04 Mar 2022
+
+* *4 hours* Wrote implementation chapter
+
+### 05 Mar 2022
+
+* *3 hours* Kept working on evaluation, created diagrams for dissertation
+
+<br />
+
+## Week 21
+
+*No work this week due to theatre placement*
+
+<br />
+
+## Week 22
+
+### 14 Mar 2022
+
+*4 hours* Working on evaluation
+
+### 17 Mar 2022
+
+* *30 min* Seventeenth meeting with Nicolas
+
+### 20 Mar 2022
+
+* *3 hours* Started writing evaluation chapter and refining draft
+
+### 22 Mar 2022
+
+* *2 hours* Kept working on dissertation
+
+<br />
+
+## Week 23
+
+*No meeting this week*
+
+### 24 Mar 2022
+
+* *5 hours* Worked on dissertation
+
+### 29 Mar 2022
+
+* *6 hours* Worked on dissertation and last details
+
+### 30 Mar 2022
+
+* *6 hours* Worked on dissertation and last details
+
+<br />
+
+## Week 24
+
+### 31 Mar 2022
+
+* *4 hours* Fixed last details and made video presentation
 
 
 
