@@ -106,7 +106,7 @@ class PainterBase():
         return v
 
 
-    def _render(self, v, save_jpgs=True, save_video=True):
+    def _render(self, v, weights, save_jpgs=True, save_video=True):
 
         v = v[0,:,:]
         if self.args.keep_aspect_ratio:
@@ -130,17 +130,31 @@ class PainterBase():
 
         print('rendering canvas...')
         self.rderr.create_empty_canvas()
-        for i in range(v.shape[0]):  # for each stroke
-            self.rderr.stroke_params = v[i, :]
-            if self.rderr.check_stroke():
-                self.rderr.draw_stroke()
-            this_frame = self.rderr.canvas
-            this_frame = cv2.resize(this_frame, (out_w, out_h), cv2.INTER_AREA)
-            if save_jpgs:
-                plt.imsave(file_name + '_rendered_stroke_' + str((i+1)).zfill(4) +
-                           '.png', this_frame)
-            if save_video:
-                video_writer.write((this_frame[:,:,::-1] * 255.).astype(np.uint8))
+        counter = 0
+        for i in range(1,self.anchor_id+2):
+            indexes = []
+            ind = i - 1
+            for j in range(1,self.m_grid**2+1):
+                if i<=weights[j]:
+                    indexes.append(ind)
+                if self.anchor_id<weights[j]:
+                    ind += (self.anchor_id+1)
+                else:
+                    ind += weights[j]
+
+            for brushstroke in indexes:  # for each stroke
+                counter += 1
+                self.rderr.stroke_params = v[brushstroke, :]
+                if self.rderr.check_stroke():
+                    self.rderr.draw_stroke()
+                this_frame = self.rderr.canvas
+                this_frame = cv2.resize(this_frame, (out_w, out_h), cv2.INTER_AREA)
+                if save_jpgs and (counter%100 == 0):
+                    plt.imsave(file_name + '_rendered_stroke_' + str((counter)).zfill(4) +
+                            '.png', this_frame)
+                if save_video:
+                    video_writer.write((this_frame[:,:,::-1] * 255.).astype(np.uint8))
+
 
         
         print('saving input photo...')
