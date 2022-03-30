@@ -280,11 +280,11 @@
 
 * *5 hours* Started processing images for evaluation
 
-## 8 Feb 2022
+### 8 Feb 2022
 
 * *3 hours* Processing images for evaluation, working on disseration draft
 
-## 9 Feb 2022
+### 9 Feb 2022
 
 * *5 hours* Processing images for evaluation, working on dissertation draft
 
