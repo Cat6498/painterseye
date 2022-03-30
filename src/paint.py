@@ -199,7 +199,7 @@ def paint(pt, name, method="equal", map_type="final"):
     pt._save_stroke_params(v)
     v_n = pt._normalize_strokes(pt.x, weights)
     v_n = pt._shuffle_strokes_and_reshape(v_n)
-    final_rendered_image = pt._render(v_n, save_jpgs=False, save_video=True)
+    final_rendered_image = pt._render(v_n, weights, save_jpgs=True, save_video=True)
     return weights
 
 
@@ -276,5 +276,5 @@ def style_transfer(pt, weights, trans_mode):
     print('saving style transfer result...')
     v_n = pt._normalize_strokes(pt.x, weights)
     v_n = pt._shuffle_strokes_and_reshape(v_n)
-    final_rendered_image = pt._render(v_n, save_jpgs=False, save_video=False)
+    final_rendered_image = pt._render(v_n, weights, save_jpgs=False, save_video=False)
     pt._save_style_transfer_images(final_rendered_image)
