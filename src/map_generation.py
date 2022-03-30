@@ -51,7 +51,7 @@ def semantic_seg(inp_img, name):
     path = os.path.join(result_dir, str(i) + ".png")
     cv2.imwrite(path, mask*255)
   
-  print("Segmentation done!", i, "objects identified")
+  print("Segmentation done!", i+1, "objects identified")
 
 
 
