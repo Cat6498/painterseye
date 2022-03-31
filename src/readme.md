@@ -40,12 +40,15 @@ NOTE: the painter needs over 10GB of GPU to run, I could not run it on my comput
 
 The general instructions to run the painter are:
 
-* intall required packages
-* download the checkpoint from [add link] and store it in checkpoint/GAN_model
-* download your preferred style checkpoint from [add link] and store it in checkpoints/checkpoint_G_style/, replacing 'style' with the style you chose (eg oilpaintbrush)
-* upload the image you want to paint in input/
-* if you want to perform style transfer, add your style image in style_images/
-* run the painter
+* Clone this repo and make sure you are in the src folder
+* Install required packages
+* Download the checkpoint for [SalGAN here](https://drive.google.com/open?id=1ujf-5eqcEdZSQ2T98JKNKuMqczHS-ptq) and store it in checkpoint/GAN_model
+* Download your preferred style checkpoint ([oil paint](https://drive.google.com/file/d/1sqWhgBKqaBJggl2A8sD1bLSq2_B1ScMG/view?usp=sharing), [watercolor](https://drive.google.com/file/d/19Yrj15v9kHvWzkK9o_GSZtvQaJPmcRYQ/view?usp=sharing), [marker pen](https://drive.google.com/file/d/1XsjncjlSdQh2dbZ3X1qf1M8pDc8GLbNy/view?usp=sharing), [color tapes](https://drive.google.com/file/d/162ykmRX8TBGVRnJIof8NeqN7cuwwuzIF/view?usp=sharing)), unzip it and store it in checkpoints/checkpoints_G_style/, replacing 'style' with the style you chose (eg oilpaintbrush)
+* Upload the image you want to paint in input/
+* If you want to perform style transfer, add your style image in style_images/
+* Set your arguments in the form on Colab
+* Run the cell to produce the painting
+* When it's done, run the cell below to download the results (please note this only works on Chrome)
 
 
 
