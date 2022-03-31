@@ -34,7 +34,7 @@ The painter is implemented entirely on Python and Pytorch. The structure of the 
 * detectron2, with your TORCH_VERSION and CUDA_VERSION
     * !pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/$CUDA_VERSION/torch$TORCH_VERSION/index.html
 
-NOTE: the painter needs over 10GB of GPU to run, I could not run it on my computer. I created a Colaboratory notebook, and it is the easiest way to run the painter. The notebook is available at [link the notebook], and a copy is provided inside this folder. Opening it through the link, it will guide you step by step through packages installation and checkpoints download, tell you how to load your image and let you customise the painting process. Note however that due to high GPU requirement I need a Colab Pro subscription to run the painter.
+NOTE: the painter needs over 10GB of GPU to run, I could not run it on my computer. I created a Colaboratory notebook, and it is the easiest way to run the painter. The notebook is available [here](https://colab.research.google.com/drive/1-sOYlQQMMm4rpsOXe2Y62RTrtJpQ_MkD?usp=sharing), and a copy is provided inside this folder. Opening it through the link, it will guide you step by step through packages installation and checkpoints download, tell you how to load your image and let you customise the painting process. Note however that due to high GPU requirement I need a Colab Pro subscription to run the painter.
 
 ## Build instructions
 
