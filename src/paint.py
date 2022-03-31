@@ -205,7 +205,7 @@ def paint(pt, name, method="equal", map_type="final"):
 
 # STYLE TRANSFER - on precomputed brushstrokes
 
-def set_nst_args(inp_img, name, sty_img, vec_path, trans_mode=1, style="oilpaintbrush"):
+def set_nst_args(inp_img, name, sty_img, vec_path, trans_mode=2, style="oilpaintbrush"):
     parser = argparse.ArgumentParser(description='STYLIZED NEURAL PAINTING')
     args = parser.parse_args(args=[])
     args.content_img_path = inp_img # path to input photo
@@ -230,7 +230,7 @@ def set_nst_args(inp_img, name, sty_img, vec_path, trans_mode=1, style="oilpaint
 
 
 
-def style_transfer(pt, weights, trans_mode):
+def style_transfer(pt, weights, trans_mode=2):
 
     pt._load_checkpoint()
     pt.net_G.eval()
